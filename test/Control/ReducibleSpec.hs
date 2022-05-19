@@ -501,7 +501,7 @@ spec = do
                     (runLogger $ do
                         (\a -> RWS.Strict.runRWST a "a" "b") $ fromReduced $
                             fn
-                                (lift . lift . writeLog)
+                                (lift . writeLog)
                                 (toReduced . RWS.Strict.tell)
                                 (toReduced . RWS.Strict.writer)
                                 (toReduced . RWS.Strict.listen . fromReduced)

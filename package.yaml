@@ -31,6 +31,7 @@ library:
   source-dirs: src
   other-modules:
     - Control.Reducible.Internal.TH
+    - Control.Reducible.Example
   ghc-options:
   - -Wall
 

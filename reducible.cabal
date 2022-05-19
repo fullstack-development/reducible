@@ -26,9 +26,11 @@ source-repository head
 library
   exposed-modules:
       Control.Reducible
+      Control.Reducible.Lifting
       Control.Reducible.Orphans
   other-modules:
       Control.Reducible.Internal.TH
+      Control.Reducible.Example
   hs-source-dirs:
       src
   ghc-options: -Wall
