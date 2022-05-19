@@ -6,7 +6,6 @@ where
 import Control.Monad
 import Language.Haskell.TH
 import qualified Control.Monad.Trans.State.Strict as State
-import qualified Data.Map.Strict as Map
 
 zipWithStrict_ ::
     (MonadPlus m) =>
@@ -23,7 +22,7 @@ zipWithStrict_ _ _ _ =
 
 isMatchingRepr :: Info -> Info -> Bool
 isMatchingRepr infoA infoB = do
-    case State.runStateT (goInfo infoA infoB) Map.empty of
+    case State.runStateT (goInfo infoA infoB) [] of
         Nothing -> False
         Just ((), _) -> True
   where
@@ -41,7 +40,7 @@ isMatchingRepr infoA infoB = do
         mzero
     goParam (KindedTV nameA kindA) (KindedTV nameB kindB) = do
         goType kindA kindB
-        State.modify' (Map.insert nameA nameB)
+        State.modify' ((nameA, nameB) :)
     goParam _ _ = do
         mzero
     goType ArrowT ArrowT = do
@@ -52,7 +51,7 @@ isMatchingRepr infoA infoB = do
         goType funA funB
         goType argA argB
     goType (VarT varA) (VarT varB) = do
-        varAImage <- State.gets (Map.lookup varA)
+        varAImage <- State.gets (lookup varA)
         guard (varAImage == Just varB)
     goType (TupleT nA) (TupleT nB) = do
         guard (nA == nB)
