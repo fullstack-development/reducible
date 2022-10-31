@@ -1,3 +1,5 @@
+{-# LANGUAGE CPP #-}
+
 module Control.Reducible.Internal.TH
     ( chooseInstanceIfMatchingRepr
     )
@@ -39,7 +41,11 @@ isMatchingRepr infoA infoB = do
         goCon conA conB
     goDecl _ _ = do
         mzero
+#if MIN_VERSION_template_haskell(2,17,0)
+    goParam (KindedTV nameA _ kindA) (KindedTV nameB _ kindB) = do
+#else
     goParam (KindedTV nameA kindA) (KindedTV nameB kindB) = do
+#endif
         goType kindA kindB
         State.modify' (Map.insert nameA nameB)
     goParam _ _ = do
@@ -101,7 +107,7 @@ chooseInstanceIfMatchingRepr nameA nameB onMatch onDiff = do
             onMatch
         else do
             reportWarning $
-                "Internal representation for " <> show nameA <> " \
-                \differs from the expected,\n\
-                \falling back to a default instance implementation"
+                "Internal representation for " <> show nameA <>
+                " differs from the expected,\n" <>
+                "falling back to a default instance implementation"
             onDiff
